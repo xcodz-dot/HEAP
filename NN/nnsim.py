@@ -26,12 +26,12 @@ Outputs
 
 IC = 5
 OC = 4
-NC = 10
-ccount = 10
+NC = 4
+ccount = 50
 SIMCOUNT = 120
-GSIZE = (IC*OC*NC)+20
+GSIZE = 24
 psize = 100
-MUTATION_RATE = 0.1
+MUTATION_RATE = 0.05
 AIMRECT = (
     (90, 90),
     (101, 101)
