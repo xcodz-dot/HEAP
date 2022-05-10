@@ -36,6 +36,12 @@ AIMRECT = (
     (101, 101)
 )
 
+try:
+    rng = random.SystemRandom()
+except:
+    rng = random.Random()
+    rng.seed()
+
 def inrect(c, rect):
     return (c.x in range(rect[0][0], rect[1][0])) and (c.y in range(rect[0][1], rect[1][1]))
 
@@ -47,11 +53,11 @@ def appropriate_genome_random():
 
 class Creature:
     def __init__(self, nn):
-        self.x = random.randint(0, psize)
-        self.y = random.randint(0, psize)
+        self.x = rng.randint(0, psize)
+        self.y = rng.randint(0, psize)
         while inrect(self, AIMRECT):
-            self.x = random.randint(0, psize)
-            self.y = random.randint(0, psize)
+            self.x = rng.randint(0, psize)
+            self.y = rng.randint(0, psize)
         self.nn = nn
     
     def simulate(self):
@@ -64,13 +70,13 @@ class Creature:
 
         # print(self.nn.outputs)
 
-        if self.nn.outputs[0] > 0 and self.x > 0:
+        if self.nn.outputs[0] > -0.3 and self.x > 0:
             self.x -= 1
-        if self.nn.outputs[1] > 0 and self.x < psize:
+        if self.nn.outputs[1] > -0.3 and self.x < psize:
             self.x += 1
-        if self.nn.outputs[2] > 0 and self.y > 0:
+        if self.nn.outputs[2] > -0.3 and self.y > 0:
             self.y -= 1
-        if self.nn.outputs[3] > 0 and self.y < psize:
+        if self.nn.outputs[3] > -0.3 and self.y < psize:
             self.y += 1
 
 parser = argparse.ArgumentParser()

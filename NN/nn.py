@@ -23,15 +23,21 @@ import struct
 import random
 import math
 
+try:
+    rng = random.SystemRandom()
+except:
+    rng = random.Random()
+    rng.seed()
+
 GENOME_STRUCT_SIZE = 11
 
 def appropriate_genome_part_random(IC, NC, OC):
-    return (((int(random.randint(0, 5) > 4) << 7) | +
-        (int(random.randint(0, 5) > 4) << 6)).to_bytes(1, 'big') +
-        random.randint(0, max(IC, NC)-1).to_bytes(1, 'big') +
-        random.randint(0, max(OC, NC)-1).to_bytes(1, 'big') +
-        struct.pack(">f", random.uniform(-2.0, 2.0)) +
-        struct.pack(">f", random.uniform(-1.0, 1.0)))
+    return (((int(rng.randint(0, 5) > 4) << 7) | +
+        (int(rng.randint(0, 5) > 4) << 6)).to_bytes(1, 'big') +
+        rng.randint(0, max(IC, NC)-1).to_bytes(1, 'big') +
+        rng.randint(0, max(OC, NC)-1).to_bytes(1, 'big') +
+        struct.pack(">f", rng.uniform(-2.0, 2.0)) +
+        struct.pack(">f", rng.uniform(-1.0, 1.0)))
 
 def unpackgenome(block: bytes):
     From = bool(block[0] & 0b1000_0000)
@@ -88,10 +94,10 @@ class NN:
                 pass
 
     def reproduce(self, mutation: float):
-        if random.uniform(0.0, 1.0) < mutation:
+        if rng.uniform(0.0, 1.0) < mutation:
             genome = self.genome
             for x in range(5):
-                rindex = random.randint(0, len(genome)//GENOME_STRUCT_SIZE)*GENOME_STRUCT_SIZE
+                rindex = rng.randint(0, len(genome)//GENOME_STRUCT_SIZE)*GENOME_STRUCT_SIZE
                 genome = genome.replace(genome[rindex: rindex+GENOME_STRUCT_SIZE], appropriate_genome_part_random(len(self.inputs), len(self.neurons), len(self.outputs)))
         else:
             genome = self.genome
