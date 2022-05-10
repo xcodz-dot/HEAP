@@ -10,6 +10,7 @@ Genome
 Format
 [1-bit high=FromInput   low=FromNeuron]
 [1-bit high=ToOutput    low=ToNeuron]
+ [6-bit padding]
 [8-bit NeuronIdIn]
 [8-bit NeuronIdOut]
 [32-bit Weight]
@@ -22,19 +23,25 @@ import struct
 import random
 import math
 
-GENOME_STRUCT = ">??BBff"
-GENOME_STRUCT_SIZE = struct.calcsize(GENOME_STRUCT)
+GENOME_STRUCT_SIZE = 11
 
 def appropriate_genome_part_random(IC, NC, OC):
-    return struct.pack(
-        GENOME_STRUCT,
-        random.randint(0, 5) > 4,
-        random.randint(0, 5) > 4,
-        random.randint(0, max(IC, NC)-1),
-        random.randint(0, max(OC, NC)-1),
-        random.uniform(-1.0, 1.0),
-        random.uniform(-1.0, 1.0)
-    )
+    return (((int(random.randint(0, 5) > 4) << 7) | +
+        (int(random.randint(0, 5) > 4) << 6)).to_bytes(1, 'big') +
+        random.randint(0, max(IC, NC)-1).to_bytes(1, 'big') +
+        random.randint(0, max(OC, NC)-1).to_bytes(1, 'big') +
+        struct.pack(">f", random.uniform(-2.0, 2.0)) +
+        struct.pack(">f", random.uniform(-1.0, 1.0)))
+
+def unpackgenome(block: bytes):
+    From = bool(block[0] & 0b1000_0000)
+    To = bool(block[0] & 0b0100_0000)
+    NeuronIdIn = block[1]
+    NeuronIdOut = block[2]
+    Weight = struct.unpack(">f", block[3:7])[0]
+    Bias = struct.unpack(">f", block[7:11])[0]
+    return (From, To, NeuronIdIn, NeuronIdOut, Weight, Bias)
+
 
 class NN:
     def __init__(self, inputs: int = 0, outputs: int = 0, neurons: int = 2, genome: bytes = b""):
@@ -44,7 +51,7 @@ class NN:
         self.genome_decoded = []
         for x in range(0, len(genome), GENOME_STRUCT_SIZE):
             block = genome[x:x+GENOME_STRUCT_SIZE]
-            self.genome_decoded.append(Connection(*struct.unpack(GENOME_STRUCT, block)))
+            self.genome_decoded.append(Connection(*unpackgenome(block)))
         self.neurons = array.array('f', [0.0 for _ in range(outputs)])
     
     def simulate(self):

@@ -2,7 +2,6 @@ import pickle
 import random
 import nn
 import argparse
-import struct
 import math
 
 """
@@ -40,21 +39,10 @@ AIMRECT = (
 def inrect(c, rect):
     return (c.x in range(rect[0][0], rect[1][0])) and (c.y in range(rect[0][1], rect[1][1]))
 
-def appropriate_genome_part_random():
-    return struct.pack(
-        nn.GENOME_STRUCT,
-        random.randint(0, 5) > 4,
-        random.randint(0, 5) > 4,
-        random.randint(0, max(IC, NC)-1),
-        random.randint(0, max(OC, NC)-1),
-        random.uniform(-1.0, 1.0),
-        random.uniform(-1.0, 1.0)
-    )
-
 def appropriate_genome_random():
     d = b''
     for x in range(GSIZE):
-        d += appropriate_genome_part_random()
+        d += nn.appropriate_genome_part_random(IC, NC, OC)
     return d
 
 class Creature:

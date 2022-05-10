@@ -1,6 +1,5 @@
 from pyvis.network import Network
 import nn
-import struct
 import webbrowser
 import argparse
 import pickle
@@ -9,7 +8,7 @@ def view(genome: bytes, inodes = [], onodes = [], bnodes = []):
     genome_decoded = []
     for x in range(0, len(genome), nn.GENOME_STRUCT_SIZE):
         block = genome[x:x+nn.GENOME_STRUCT_SIZE]
-        genome_decoded.append(nn.Connection(*struct.unpack(nn.GENOME_STRUCT, block)))
+        genome_decoded.append(nn.Connection(*nn.unpackgenome(block)))
     net = Network()
     oid = [f'o{x}' for x in range(len(onodes))]
     iid = [f'i{x}' for x in range(len(inodes))]
