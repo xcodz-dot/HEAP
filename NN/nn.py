@@ -20,6 +20,7 @@ import copy
 import array
 import struct
 import random
+import math
 
 GENOME_STRUCT = ">??BBff"
 GENOME_STRUCT_SIZE = struct.calcsize(GENOME_STRUCT)
@@ -59,7 +60,7 @@ class NN:
                 else:
                     ival = self.neurons[x.NeuronIdIn]
                 
-                oval = ival*x.Weight + x.Bias
+                oval = math.tanh(ival*x.Weight + x.Bias)
                 
                 if x.To:
                     self.outputs_new[x.NeuronIdOut].append(oval)
